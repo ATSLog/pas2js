@@ -12,7 +12,7 @@
  **********************************************************************}
 unit SysUtils;
 
-{$mode objfpc}
+{$mode delphi}
 {$modeswitch typehelpers}
 {$modeswitch advancedrecords}
 {$WARN 5078 off}
@@ -55,7 +55,19 @@ type
   TMonthNames = TMonthNameArray;
   TDayNames = array[0..6] of string;
 
-type
+  TProc = reference to procedure;
+  TProc<T> = reference to procedure (Arg1: T);
+  TProc<T1,T2> = reference to procedure (Arg1: T1; Arg2: T2);
+  TProc<T1,T2,T3> = reference to procedure (Arg1: T1; Arg2: T2; Arg3: T3);
+  TProc<T1,T2,T3,T4> = reference to procedure (Arg1: T1; Arg2: T2; Arg3: T3; Arg4: T4);
+
+  TFunc<TResult> = reference to function: TResult;
+  TFunc<T,TResult> = reference to function (Arg1: T): TResult;
+  TFunc<T1,T2,TResult> = reference to function (Arg1: T1; Arg2: T2): TResult;
+  TFunc<T1,T2,T3,TResult> = reference to function (Arg1: T1; Arg2: T2; Arg3: T3): TResult;
+  TFunc<T1,T2,T3,T4,TResult> = reference to function (Arg1: T1; Arg2: T2; Arg3: T3; Arg4: T4): TResult;
+
+  TPredicate<T> = reference to function (Arg1: T): Boolean;
 
   { TFormatSettings }
   TFormatSettings = record
@@ -250,8 +262,8 @@ function AnsiSameText(const s1, s2: String): Boolean; assembler;
 function AnsiCompareStr(const s1, s2: String): Integer;
 procedure AppendStr(var Dest: String; const S: string);
 
-function Format(const Fmt: String; const Args: array of const): String;
-function Format(const Fmt: String; const Args: array of const; const aSettings : TFormatSettings): String;
+function Format(const Fmt: String; const Args: array of const): String; overload;
+function Format(const Fmt: String; const Args: array of const; const aSettings : TFormatSettings): String; overload;
 
 function BytesOf(const AVal: string): TBytes;
 function StringOf(const ABytes: TBytes): string;
@@ -274,23 +286,23 @@ function QuotedStr(const s: string; QuoteChar: Char = ''''): string;
 function DeQuoteString(aQuoted: String; AQuote: Char): String;
 Function LastDelimiter(const Delimiters, S: string): SizeInt;
 function IsDelimiter(const Delimiters, S: string; Index: Integer): Boolean;
-function AdjustLineBreaks(const S: string): string;
-function AdjustLineBreaks(const S: string; Style: TTextLineBreakStyle): string;
-function WrapText(const Line, BreakStr: string; const BreakChars: Array of char;  MaxCol: Integer): string;
-function WrapText(const Line: string; MaxCol: Integer): string;
+function AdjustLineBreaks(const S: string): string; overload;
+function AdjustLineBreaks(const S: string; Style: TTextLineBreakStyle): string; overload;
+function WrapText(const Line, BreakStr: string; const BreakChars: Array of char;  MaxCol: Integer): string; overload;
+function WrapText(const Line: string; MaxCol: Integer): string; overload;
 
 { *****************************************************************************
   Integer conversions
   *****************************************************************************}
 
-Function SwapEndian(W : Word) : Word;
-Function SwapEndian(C : Cardinal) : Cardinal;
+Function SwapEndian(W : Word) : Word; overload;
+Function SwapEndian(C : Cardinal) : Cardinal; overload;
 function IntToStr(const Value: Integer): string;
-Function TryStrToInt(const S : String; Out res : Integer) : Boolean;
-Function TryStrToInt(const S : String; Out res : NativeInt) : Boolean;
-function TryStrToInt(const S: String; out res: NativeInt; Const aSettings : TFormatSettings): Boolean;
-Function StrToIntDef(const S : String; Const aDef : Integer) : Integer;
-Function StrToIntDef(const S : String; Const aDef : NativeInt) : NativeInt;
+Function TryStrToInt(const S : String; Out res : Integer) : Boolean; overload;
+Function TryStrToInt(const S : String; Out res : NativeInt) : Boolean; overload;
+function TryStrToInt(const S: String; out res: NativeInt; Const aSettings : TFormatSettings): Boolean; overload;
+Function StrToIntDef(const S : String; Const aDef : Integer) : Integer; overload;
+Function StrToIntDef(const S : String; Const aDef : NativeInt) : NativeInt; overload;
 Function StrToInt(const S : String) : Integer;
 Function StrToNativeInt(const S : String) : NativeInt;
 function StrToUInt(const s: string): Cardinal;
@@ -340,8 +352,8 @@ Function TryStrToFloat(const S : String; Out res : Extended) : Boolean; overload
 Function TryStrToFloat(const S : String; Out res : Extended; const aSettings : TFormatSettings) : Boolean; overload;
 Function TryStrToFloat(const S : String; Out res : Double) : Boolean; overload;
 Function TryStrToFloat(const S : String; Out res : Double; const aSettings : TFormatSettings) : Boolean; overload;
-Function StrToFloatDef(const S : String; Const aDef : Double) : Double;
-function StrToFloatDef(const S: String; const aDef: Double; const aSettings : TFormatSettings): Double;
+Function StrToFloatDef(const S : String; Const aDef : Double) : Double; overload;
+function StrToFloatDef(const S: String; const aDef: Double; const aSettings : TFormatSettings): Double; overload;
 Function StrToFloat(const S : String) : Double; overload;
 Function StrToFloat(const S : String; const aSettings : TFormatSettings) : Double; overload;
 Function FormatFloat (Fmt : String; aValue : Double) : String; overload;
@@ -356,8 +368,8 @@ Var
   TrueBoolStrs, FalseBoolStrs : Array of String;
 
 function StrToBool(const S: String): Boolean;
-function BoolToStr(B: Boolean; UseBoolStrs:Boolean=False): string;
-function BoolToStr(B: Boolean; const TrueS, FalseS: String): string;
+function BoolToStr(B: Boolean; UseBoolStrs:Boolean=False): string; overload;
+function BoolToStr(B: Boolean; const TrueS, FalseS: String): string; overload;
 function StrToBoolDef(const S: String; Default: Boolean): Boolean;
 function TryStrToBool(const S: String; out Value: Boolean): Boolean;
 
@@ -387,8 +399,8 @@ var
 
 // Set handlers for uncaught exceptions. These will call HookUncaughtExceptions
 // They return the old exception handler, if there was any.
-Function SetOnUnCaughtExceptionHandler(aValue : TUncaughtPascalExceptionHandler) : TUncaughtPascalExceptionHandler;
-Function SetOnUnCaughtExceptionHandler(aValue : TUncaughtJSExceptionHandler) : TUncaughtJSExceptionHandler;
+Function SetOnUnCaughtExceptionHandler(aValue : TUncaughtPascalExceptionHandler) : TUncaughtPascalExceptionHandler; overload;
+Function SetOnUnCaughtExceptionHandler(aValue : TUncaughtJSExceptionHandler) : TUncaughtJSExceptionHandler; overload;
 // Hook the rtl handler for uncaught exceptions. If any exception handlers were set, they will be called.
 // If none were set, the exceptions will be displayed using ShowException.
 Procedure HookUncaughtExceptions;
@@ -525,24 +537,24 @@ function StrToDateDef(const S: String; const Defvalue : TDateTime; separator : c
 
 // Time <-> String conversion
 
-function TimeToStr(Time: TDateTime): string;overload;
-function TimeToStr(Time: TDateTime; const aSettings: TFormatSettings): string;overload;
-function StrToTime(const S: String): TDateTime;overload;
-function StrToTime(const S: String; separator : char): TDateTime;overload;
-function StrToTime(const S: string; const aSettings : TFormatSettings): TDateTime;overload;
-function TryStrToTime(const S: String; out Value: TDateTime): Boolean;overload;
-function TryStrToTime(const S: String; out Value: TDateTime; aSettings : TFormatSettings): Boolean;overload;
+function TimeToStr(Time: TDateTime): string; overload;
+function TimeToStr(Time: TDateTime; const aSettings: TFormatSettings): string; overload;
+function StrToTime(const S: String): TDateTime; overload;
+function StrToTime(const S: String; separator : char): TDateTime; overload;
+function StrToTime(const S: string; const aSettings : TFormatSettings): TDateTime; overload;
+function TryStrToTime(const S: String; out Value: TDateTime): Boolean; overload;
+function TryStrToTime(const S: String; out Value: TDateTime; aSettings : TFormatSettings): Boolean; overload;
 function TryStrToTime(const S: String; out Value: TDateTime; separator : char): Boolean; overload;
-function StrToTimeDef(const S: String; const Defvalue : TDateTime): TDateTime;overload;
-function StrToTimeDef(const S: String; const Defvalue : TDateTime; separator : char): TDateTime;overload;
-function StrToTimeDef(const AString: string; const ADefault: TDateTime; const aSettings: TFormatSettings): TDateTime;
+function StrToTimeDef(const S: String; const Defvalue : TDateTime): TDateTime; overload;
+function StrToTimeDef(const S: String; const Defvalue : TDateTime; separator : char): TDateTime; overload;
+function StrToTimeDef(const AString: string; const ADefault: TDateTime; const aSettings: TFormatSettings): TDateTime; overload;
 
 // DateTime <-> String conversion
 
-function DateTimeToStr(DateTime: TDateTime; ForceTimeIfZero : Boolean = False): string;overload;
-function DateTimeToStr(DateTime: TDateTime; const aSettings: TFormatSettings; ForceTimeIfZero : Boolean = False): string;overload;
-function StrToDateTime(const S: String): TDateTime;overload;
-function StrToDateTime(const s: String; const aSettings : TFormatSettings): TDateTime;overload;
+function DateTimeToStr(DateTime: TDateTime; ForceTimeIfZero : Boolean = False): string; overload;
+function DateTimeToStr(DateTime: TDateTime; const aSettings: TFormatSettings; ForceTimeIfZero : Boolean = False): string; overload;
+function StrToDateTime(const S: String): TDateTime; overload;
+function StrToDateTime(const s: String; const aSettings : TFormatSettings): TDateTime; overload;
 function TryStrToDateTime(const S: String; out Value: TDateTime): Boolean; overload;
 function TryStrToDateTime(const S: string; out Value: TDateTime; const aSettings: TFormatSettings): Boolean; overload;
 function StrToDateTimeDef(const S: String; const Defvalue : TDateTime): TDateTime; overload;
@@ -564,14 +576,14 @@ Var
 
 Function FloattoCurr (Const Value : Extended) : Currency;
 function TryFloatToCurr(const Value: Extended; var AResult: Currency): Boolean;
-Function CurrToStr(Value: Currency): string;
-Function CurrToStr(Value: Currency; Const aSettings: TFormatSettings): string;
-function StrToCurr(const S: string): Currency;
-function StrToCurr(const S: string; Const aSettings: TFormatSettings): Currency;
-function TryStrToCurr(const S: string;Out Value : Currency): Boolean;
-function TryStrToCurr(const S: string;Out Value : Currency; Const aSettings: TFormatSettings): Boolean;
-function StrToCurrDef(const S: string; Default : Currency): Currency;
-function StrToCurrDef(const S: string; Default : Currency; Const aSettings: TFormatSettings): Currency;
+Function CurrToStr(Value: Currency): string; overload;
+Function CurrToStr(Value: Currency; Const aSettings: TFormatSettings): string; overload;
+function StrToCurr(const S: string): Currency; overload;
+function StrToCurr(const S: string; Const aSettings: TFormatSettings): Currency; overload;
+function TryStrToCurr(const S: string;Out Value : Currency): Boolean; overload;
+function TryStrToCurr(const S: string;Out Value : Currency; Const aSettings: TFormatSettings): Boolean; overload;
+function StrToCurrDef(const S: string; Default : Currency): Currency; overload;
+function StrToCurrDef(const S: string; Default : Currency; Const aSettings: TFormatSettings): Currency; overload;
 
 {*****************************************************************************
                                File Paths
@@ -713,7 +725,7 @@ Type
     Class Function ToNativeInt(const S: string): NativeInt; overload; static; inline;
     Class Function ToInteger(const S: string): Integer; overload; static; inline;
     Class Function UpperCase(const S: string): string; overload; static; inline;
-    Class Function ToCharArray(const S : String) : TCharArray; static;
+    Class Function ToCharArray(const S : String) : TCharArray; static; overload;
     Function CompareTo(const B: string): Integer;
     Function Contains(const AValue: string): Boolean;
     Function CountChar(const C: Char): SizeInt;
@@ -1136,76 +1148,75 @@ Type
     Procedure CheckNegative(Const AValue : Integer; Const AName: String); inline;
     // All appends/inserts pass through here.
 
-    Procedure DoAppend(Const S : String);virtual;
-    Procedure DoAppend(const AValue: Array of char; Idx, aCount: Integer); virtual;
-    Procedure DoInsert(Index: Integer; const AValue: String); virtual;
-    Procedure DoInsert(Index: Integer; const AValue: Array of char; StartIndex, aCharCount: Integer); virtual;
+    Procedure DoAppend(Const S : String); virtual; overload;
+    Procedure DoAppend(const AValue: Array of char; Idx, aCount: Integer); virtual; overload;
+    Procedure DoInsert(Index: Integer; const AValue: String); virtual; overload;
+    Procedure DoInsert(Index: Integer; const AValue: Array of char; StartIndex, aCharCount: Integer); virtual; overload;
     Procedure DoReplace(Index: Integer; const Old, New: String); virtual;
     Procedure Grow;
     Procedure Shrink;
   public
-    Constructor Create;
-    Constructor Create(aCapacity: Integer);
-    Constructor Create(const AValue: String);
-    Constructor Create(aCapacity: Integer; aMaxCapacity: Integer);
-    Constructor Create(const AValue: String; aCapacity: Integer);
-    Constructor Create(const AValue: String; StartIndex: Integer; aLength: Integer; aCapacity: Integer);
+    Constructor Create; overload;
+    Constructor Create(aCapacity: Integer); overload;
+    Constructor Create(const AValue: String); overload;
+    Constructor Create(aCapacity: Integer; aMaxCapacity: Integer); overload;
+    Constructor Create(const AValue: String; aCapacity: Integer); overload;
+    Constructor Create(const AValue: String; StartIndex: Integer; aLength: Integer; aCapacity: Integer); overload;
 
-    Function Append(const AValue: Boolean): TStringBuilder;
-    Function Append(const AValue: Byte): TStringBuilder;
-    Function Append(const AValue: Char): TStringBuilder;
-    Function Append(const AValue: Currency): TStringBuilder;
-    Function Append(const AValue: Double): TStringBuilder;
-    Function Append(const AValue: Smallint): TStringBuilder;
-    Function Append(const AValue: LongInt): TStringBuilder;
-    Function Append(const AValue: Int64): TStringBuilder;
-    Function Append(const AValue: TObject): TStringBuilder;
-    Function Append(const AValue: Shortint): TStringBuilder;
-    Function Append(const AValue: Single): TStringBuilder;
-    Function Append(const AValue: UInt64): TStringBuilder;
-    Function Append(const AValue: Array of char): TStringBuilder;
-    Function Append(const AValue: Word): TStringBuilder;
-    Function Append(const AValue: Cardinal): TStringBuilder;
-    Function Append(const AValue: String): TStringBuilder;
-    Function Append(const AValue: Char; RepeatCount: Integer): TStringBuilder;
-    Function Append(const AValue: Array of char; StartIndex: Integer; SBCharCount: Integer): TStringBuilder;
-    Function Append(const AValue: String; StartIndex: Integer; Count: Integer): TStringBuilder;
-
-    Function Append(const Fmt: String; const Args: array of const): TStringBuilder;
+    Function Append(const AValue: Boolean): TStringBuilder; overload;
+    Function Append(const AValue: Byte): TStringBuilder; overload;
+    Function Append(const AValue: Char): TStringBuilder; overload;
+    Function Append(const AValue: Currency): TStringBuilder; overload;
+    Function Append(const AValue: Double): TStringBuilder; overload;
+    Function Append(const AValue: Smallint): TStringBuilder; overload;
+    Function Append(const AValue: LongInt): TStringBuilder; overload;
+    Function Append(const AValue: Int64): TStringBuilder; overload;
+    Function Append(const AValue: TObject): TStringBuilder; overload;
+    Function Append(const AValue: Shortint): TStringBuilder; overload;
+    Function Append(const AValue: Single): TStringBuilder; overload;
+    Function Append(const AValue: UInt64): TStringBuilder; overload;
+    Function Append(const AValue: Array of char): TStringBuilder; overload;
+    Function Append(const AValue: Word): TStringBuilder; overload;
+    Function Append(const AValue: Cardinal): TStringBuilder; overload;
+    Function Append(const AValue: String): TStringBuilder; overload;
+    Function Append(const AValue: Char; RepeatCount: Integer): TStringBuilder; overload;
+    Function Append(const AValue: Array of char; StartIndex: Integer; SBCharCount: Integer): TStringBuilder; overload;
+    Function Append(const AValue: String; StartIndex: Integer; Count: Integer): TStringBuilder; overload;
+    Function Append(const Fmt: String; const Args: array of const): TStringBuilder; overload;
     Function AppendFormat(const Fmt: String; const Args: array of const): TStringBuilder;
-    Function AppendLine: TStringBuilder;
-    Function AppendLine(const AValue: String): TStringBuilder;
+    Function AppendLine: TStringBuilder; overload;
+    Function AppendLine(const AValue: String): TStringBuilder; overload;
 
     Procedure Clear;
     Procedure CopyTo(SourceIndex: Integer; Var Destination: Array of char; DestinationIndex: Integer; Count: Integer);
     Function EnsureCapacity(aCapacity: Integer): Integer;
     Function Equals(StringBuilder: TStringBuilder): Boolean; reintroduce;
 
-    Function Insert(Index: Integer; const AValue: Boolean): TStringBuilder;
-    Function Insert(Index: Integer; const AValue: Byte): TStringBuilder;
-    Function Insert(Index: Integer; const AValue: Char): TStringBuilder;
-    Function Insert(Index: Integer; const AValue: Currency): TStringBuilder;
-    Function Insert(Index: Integer; const AValue: Double): TStringBuilder;
-    Function Insert(Index: Integer; const AValue: Smallint): TStringBuilder;
-    Function Insert(Index: Integer; const AValue: LongInt): TStringBuilder;
-    Function Insert(Index: Integer; const AValue: Array of char): TStringBuilder;
-    Function Insert(Index: Integer; const AValue: Int64): TStringBuilder;
-    Function Insert(Index: Integer; const AValue: TObject): TStringBuilder;
-    Function Insert(Index: Integer; const AValue: Shortint): TStringBuilder;
-    Function Insert(Index: Integer; const AValue: Single): TStringBuilder;
-    Function Insert(Index: Integer; const AValue: String): TStringBuilder;
-    Function Insert(Index: Integer; const AValue: Word): TStringBuilder;
-    Function Insert(Index: Integer; const AValue: Cardinal): TStringBuilder;
-    Function Insert(Index: Integer; const AValue: UInt64): TStringBuilder;
-    Function Insert(Index: Integer; const AValue: String; const aRepeatCount: Integer): TStringBuilder;
-    Function Insert(Index: Integer; const AValue: Array of char; startIndex: Integer; SBCharCount: Integer): TStringBuilder;
+    Function Insert(Index: Integer; const AValue: Boolean): TStringBuilder; overload;
+    Function Insert(Index: Integer; const AValue: Byte): TStringBuilder; overload;
+    Function Insert(Index: Integer; const AValue: Char): TStringBuilder; overload;
+    Function Insert(Index: Integer; const AValue: Currency): TStringBuilder; overload;
+    Function Insert(Index: Integer; const AValue: Double): TStringBuilder; overload;
+    Function Insert(Index: Integer; const AValue: Smallint): TStringBuilder; overload;
+    Function Insert(Index: Integer; const AValue: LongInt): TStringBuilder; overload;
+    Function Insert(Index: Integer; const AValue: Array of char): TStringBuilder; overload;
+    Function Insert(Index: Integer; const AValue: Int64): TStringBuilder; overload;
+    Function Insert(Index: Integer; const AValue: TObject): TStringBuilder; overload;
+    Function Insert(Index: Integer; const AValue: Shortint): TStringBuilder; overload;
+    Function Insert(Index: Integer; const AValue: Single): TStringBuilder; overload;
+    Function Insert(Index: Integer; const AValue: String): TStringBuilder; overload;
+    Function Insert(Index: Integer; const AValue: Word): TStringBuilder; overload;
+    Function Insert(Index: Integer; const AValue: Cardinal): TStringBuilder; overload;
+    Function Insert(Index: Integer; const AValue: UInt64): TStringBuilder; overload;
+    Function Insert(Index: Integer; const AValue: String; const aRepeatCount: Integer): TStringBuilder; overload;
+    Function Insert(Index: Integer; const AValue: Array of char; startIndex: Integer; SBCharCount: Integer): TStringBuilder; overload;
 
     Function Remove(StartIndex: Integer; RemLength: Integer): TStringBuilder;
 
-    Function Replace(const OldValue, NewValue: String): TStringBuilder;
-    Function Replace(const OldValue, NewValue: String; StartIndex: Integer; Count: Integer): TStringBuilder;
-    Function ToString: String; override;
-    Function ToString(aStartIndex: Integer; aLength: Integer): String; reintroduce;
+    Function Replace(const OldValue, NewValue: String): TStringBuilder; overload;
+    Function Replace(const OldValue, NewValue: String; StartIndex: Integer; Count: Integer): TStringBuilder; overload;
+    Function ToString: String; override; overload;
+    Function ToString(aStartIndex: Integer; aLength: Integer): String; reintroduce; overload;
     property Chars[index: Integer]: Char read GetC write SetC; default;
     property Length: Integer read GetLength write SetLength;
     property Capacity: Integer read GetCapacity write SetCapacity;
@@ -8208,7 +8219,7 @@ procedure TStringBuilder.SetLength(AValue: Integer);
 begin
   CheckNegative(AValue,'AValue');
   CheckRange(AValue,0,MaxCapacity);
-  SetLength(FData,aValue);
+  System.SetLength(FData,aValue);
 end;
 
 { Check functions }
