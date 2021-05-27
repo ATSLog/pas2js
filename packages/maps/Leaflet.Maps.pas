@@ -60,7 +60,8 @@ type
   TZoomPanOptions = class;
 
   TLatLngTuple = array[0..1] of Double;
-  TPointTuple = array[0..1] of Double;
+//  TPointTuple = array[0..1] of Double;
+  TPointTuple = String;
 
   TBoundsLiteral = array[0..1] of TPointTuple;
 
