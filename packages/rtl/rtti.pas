@@ -328,6 +328,7 @@ type
 
   TRttiInstanceType = class(TRttiStructuredType)
   private
+    function GetAncestorInstance: TRttiInstanceType;
     function GetClassTypeInfo: TTypeInfoClass;
     function GetMetaClassType: TClass;
   protected
@@ -335,6 +336,7 @@ type
   public
     constructor Create(ATypeInfo: PTypeInfo);
 
+    property Ancestor: TRttiInstanceType read GetAncestorInstance;
     property ClassTypeInfo: TTypeInfoClass read GetClassTypeInfo;
     property MetaClassType: TClass read GetMetaClassType;
   end;
@@ -343,6 +345,7 @@ type
 
   TRttiInterfaceType = class(TRttiStructuredType)
   private
+    function GetAncestorInterface: TRttiInterfaceType;
     function GetGUID: TGUID;
     function GetInterfaceTypeInfo: TTypeInfoInterface;
   protected
@@ -350,6 +353,7 @@ type
   public
     constructor Create(ATypeInfo: PTypeInfo);
 
+    property Ancestor: TRttiInterfaceType read GetAncestorInterface;
     property GUID: TGUID read GetGUID;
     property InterfaceTypeInfo: TTypeInfoInterface read GetInterfaceTypeInfo;
   end;
@@ -1193,7 +1197,12 @@ end;
 
 function TRttiInstanceType.GetAncestor: TRttiStructuredType;
 begin
-  Result := GRttiContext.GetType(ClassTypeInfo.Ancestor) as TRttiStructuredType;
+  Result := GetAncestorInstance;
+end;
+
+function TRttiInstanceType.GetAncestorInstance: TRttiInstanceType;
+begin
+  Result := GRttiContext.GetType(ClassTypeInfo.Ancestor) as TRttiInstanceType;
 end;
 
 constructor TRttiInstanceType.Create(ATypeInfo: PTypeInfo);
@@ -1229,7 +1238,12 @@ end;
 
 function TRttiInterfaceType.GetAncestor: TRttiStructuredType;
 begin
-  Result := GRttiContext.GetType(InterfaceTypeInfo.Ancestor) as TRttiStructuredType;
+  Result := GetAncestorInterface;
+end;
+
+function TRttiInterfaceType.GetAncestorInterface: TRttiInterfaceType;
+begin
+  Result := GRttiContext.GetType(InterfaceTypeInfo.Ancestor) as TRttiInterfaceType;
 end;
 
 { TRttiRecordType }
