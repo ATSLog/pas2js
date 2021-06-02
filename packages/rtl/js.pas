@@ -12,7 +12,7 @@
  **********************************************************************}
 unit JS;
 
-{$mode objfpc}
+{$mode delphi}
 {$modeswitch externalclass}
 
 interface
@@ -45,8 +45,8 @@ type
     procedure SetProperties(Name: String; const AValue: JSValue); external name '[]';
   public
     constructor new;
-    class function create(const proto: TJSObject): TJSObject;
-    class function create(const proto, propertiesObject: TJSObject): TJSObject;
+    class function create(const proto: TJSObject): TJSObject; overload;
+    class function create(const proto, propertiesObject: TJSObject): TJSObject; overload;
     class function assign(const Target, Source1: TJSObject): TJSObject; varargs;
     class procedure defineProperty(const obj: TJSObject; propname: String; const descriptor: TJSObjectPropertyDescriptor);
     //class procedure defineProperties
@@ -198,12 +198,12 @@ type
     procedure setUTCMonth(const AValue: NativeInt);
     procedure setUTCSeconds(const AValue: NativeInt);
   public
-    constructor New; reintroduce;
-    constructor New(const MilliSecsSince1970: NativeInt); // milliseconds since 1 January 1970 00:00:00 UTC, with leap seconds ignored
-    constructor New(const aDateString: String); // RFC 2822, ISO8601
+    constructor New; reintroduce; overload;
+    constructor New(const MilliSecsSince1970: NativeInt); overload; // milliseconds since 1 January 1970 00:00:00 UTC, with leap seconds ignored
+    constructor New(const aDateString: String); overload; // RFC 2822, ISO8601
     constructor New(aYear: NativeInt; aMonth: NativeInt; aDayOfMonth: NativeInt = 1;
       TheHours: NativeInt = 0; TheMinutes: NativeInt = 0; TheSeconds: NativeInt = 0;
-      TheMilliseconds: NativeInt = 0);
+      TheMilliseconds: NativeInt = 0); overload;
     class function now: NativeInt; // current date and time in milliseconds since 1 January 1970 00:00:00 UTC, with leap seconds ignored
     class function parse(const aDateString: string): NativeInt; // format depends on browser
     class function UTC(aYear: NativeInt; aMonth: NativeInt = 0; aDayOfMonth: NativeInt = 1;
@@ -263,8 +263,8 @@ type
     fsource : string; external name 'source';
     funicode : boolean; external name 'unicode';
   public
-    Constructor New(Pattern : string);
-    Constructor New(Pattern, Flags : string);
+    Constructor New(Pattern : string); overload;
+    Constructor New(Pattern, Flags : string); overload;
     lastIndex: NativeInt;
     function exec(aString : string): TStringDynArray;
     function test(aString : string) : boolean;
@@ -290,11 +290,11 @@ type
   TJSString = class external name 'String'
   private
     flength : NativeInt; external name 'length';
-  public 
-    constructor New(Const S : String);
-    constructor New(Const I : NativeInt);
-    constructor New(Const D : double);
-    property length : NativeInt read flength; 
+  public
+    constructor New(Const S : String); overload;
+    constructor New(Const I : NativeInt); overload;
+    constructor New(Const D : double); overload;
+    property length : NativeInt read flength;
     class function fromCharCode() : string; varargs;
     class function fromCodePoint() : string; varargs;
     function anchor(const aName : string) : string;
@@ -355,7 +355,7 @@ type
   end;
 
   TJSArray = Class;
-  
+
   TJSArrayEventProc = reference to procedure(element : JSValue; index: NativeInt; anArray : TJSArray);
   TJSArrayEvent = reference to function (element : JSValue; index: NativeInt; anArray : TJSArray) : Boolean;
   TJSArrayMapEvent = reference to function (element : JSValue; index: NativeInt; anArray : TJSArray) : JSValue;
@@ -377,9 +377,9 @@ type
     constructor new; overload;
     constructor new(aLength : NativeInt); overload;
     constructor new(aElement1 : JSValue); varargs; overload;
-    class function _of() : TJSArray; varargs; external name 'of'; 
+    class function _of() : TJSArray; varargs; external name 'of';
     class function isArray(a: JSValue) : Boolean;
-{$IFDEF JAVASCRIPT2015}    
+{$IFDEF JAVASCRIPT2015}
     class function from(a : JSValue) : TJSArray;
     class function from(arrayLike : JSValue; mapFunction : TJSMapFunctionCallBack): TJSArray; overload;
     class function from(arrayLike : JSValue; mapFunction : TJSMapFunctionCallBack; thisArg : JSValue): TJSArray; overload;
@@ -415,7 +415,7 @@ type
 //    Function map(const aCallBack : TJSArrayMapEventArray) : JSValue; overload;
     Function map(const aCallBack : TJSArrayMapCallBack) : TJSArray; overload;
     Function map(const aCallBack : TJSArrayMapEvent; aThis : TObject) : TJSArray; overload;
-    function pop : JSValue; 
+    function pop : JSValue;
     function push(aElement : JSValue) : NativeInt; varargs;
     function reduce(const aCallBack : TJSArrayReduceCallBack) : JSValue; overload;
     function reduce(const aCallBack : TJSArrayReduceCallBack; initialValue : JSValue) : JSValue; overload;
@@ -447,7 +447,7 @@ type
     fLength : NativeInt; external name 'byteLength';
   public
     constructor new(aByteLength : NativeInt);
-    class function isView(aValue : JSValue) : Boolean;   
+    class function isView(aValue : JSValue) : Boolean;
     function slice(aBegin : NativeInt) : TJSArrayBuffer; overload;
     function slice(aBegin,aEnd : NativeInt) : TJSArrayBuffer; overload;
     Property byteLength : NativeInt Read fLength;
@@ -513,10 +513,10 @@ type
     function reduceRight(const aCallBack : TJSTypedArrayReduceCallBack) : JSValue; overload;
     function reduceRight(const aCallBack : TJSTypedArrayReduceCallBack; initialValue : JSValue) : JSValue; overload;
     Function reverse : TJSTypedArray;
-    procedure _set(anArray : TJSArray); external name 'set';
-    procedure _set(anArray : TJSArray; anOffset : NativeInt); external name 'set';
-    procedure _set(anArray : TJSTypedArray); external name 'set';
-    procedure _set(anArray : TJSTypedArray; anOffset : NativeInt); external name 'set';
+    procedure _set(anArray : TJSArray); external name 'set'; overload;
+    procedure _set(anArray : TJSArray; anOffset : NativeInt); external name 'set'; overload;
+    procedure _set(anArray : TJSTypedArray); external name 'set'; overload;
+    procedure _set(anArray : TJSTypedArray; anOffset : NativeInt); external name 'set'; overload;
     Function slice : TJSTypedArray; overload;
     function slice(aBegin : NativeInt) : TJSTypedArray; overload;
     function slice(aBegin,aEnd : NativeInt) : TJSTypedArray; overload;
@@ -548,21 +548,21 @@ type
 {$IFDEF JAVASCRIPT2017}
     constructor new; // new in ES2017
 {$ENDIF}
-    constructor new (length : NativeInt);
-    constructor new (atypedArray : TJSTypedArray);
-    constructor new (aObject : TJSObject);
-    constructor new (buffer : TJSArrayBuffer);
-    constructor new (buffer : TJSArrayBuffer; aByteOffset: NativeInt);
-    constructor new (buffer : TJSArrayBuffer; aByteOffset, aLength: NativeInt);
-    class function from(aValue : jsValue) : TJSInt8Array; reintroduce;
-    class function from(aValue : jsValue; Map : TJSTypedArrayMapCallBack) : TJSInt8Array; reintroduce;
-    class function from(aValue : jsValue; aMap : TJSTypedArrayMapEvent) : TJSInt8Array; reintroduce;
-    class function _of(aValue : jsValue) : TJSInt8Array; varargs; external name 'of'; reintroduce;overload;
+    constructor new (length : NativeInt); overload;
+    constructor new (atypedArray : TJSTypedArray); overload;
+    constructor new (aObject : TJSObject); overload;
+    constructor new (buffer : TJSArrayBuffer); overload;
+    constructor new (buffer : TJSArrayBuffer; aByteOffset: NativeInt); overload;
+    constructor new (buffer : TJSArrayBuffer; aByteOffset, aLength: NativeInt); overload;
+    class function from(aValue : jsValue) : TJSInt8Array; reintroduce; overload;
+    class function from(aValue : jsValue; Map : TJSTypedArrayMapCallBack) : TJSInt8Array; reintroduce; overload;
+    class function from(aValue : jsValue; aMap : TJSTypedArrayMapEvent) : TJSInt8Array; reintroduce; overload;
+    class function _of(aValue : jsValue) : TJSInt8Array; varargs; external name 'of'; reintroduce; overload;
     class function _of(aValue : TJSValueDynArray) : TJSInt8Array; varargs; external name 'of'; reintroduce; overload;
-    function subarray(aBegin, aEnd: Integer): TJSInt8Array;  overload;
+    function subarray(aBegin, aEnd: Integer): TJSInt8Array; overload;
     function subarray(aBegin: Integer): TJSInt8Array; overload;
     procedure _set(anArray : Array of ShortInt); external name 'set'; reintroduce; overload;
-    procedure _set(anArray : Array of ShortInt; anOffset : NativeInt); external name 'set';
+    procedure _set(anArray : Array of ShortInt; anOffset : NativeInt); external name 'set'; overload;
     property values[Index : NativeInt] : Shortint Read getTypedValue Write setTypedValue; default;
   end;
 
@@ -571,41 +571,41 @@ type
     function getTypedValue(Index : NativeInt): Byte; external name '[]';
     procedure setTypedValue(Index : NativeInt; AValue: Byte);external name '[]';
   public
-    constructor new (length : NativeInt);
-    constructor new (atypedArray : TJSTypedArray);
-    constructor new (aObject : TJSObject);
-    constructor new (buffer : TJSArrayBuffer);
-    constructor new (buffer : TJSArrayBuffer; aByteOffset: NativeInt);
-    constructor new (buffer : TJSArrayBuffer; aByteOffset, aLength: NativeInt);
+    constructor new (length : NativeInt); overload;
+    constructor new (atypedArray : TJSTypedArray); overload;
+    constructor new (aObject : TJSObject); overload;
+    constructor new (buffer : TJSArrayBuffer); overload;
+    constructor new (buffer : TJSArrayBuffer; aByteOffset: NativeInt); overload;
+    constructor new (buffer : TJSArrayBuffer; aByteOffset, aLength: NativeInt); overload;
     class function from(aValue : jsValue) : TJSUInt8Array; reintroduce; overload;
-    class function from(aValue : jsValue; Map : TJSTypedArrayMapCallBack) : TJSUInt8Array; reintroduce;overload;
-    class function from(aValue : jsValue; aMap : TJSTypedArrayMapEvent) : TJSUInt8Array; reintroduce;overload;
+    class function from(aValue : jsValue; Map : TJSTypedArrayMapCallBack) : TJSUInt8Array; reintroduce; overload;
+    class function from(aValue : jsValue; aMap : TJSTypedArrayMapEvent) : TJSUInt8Array; reintroduce; overload;
     class function _of(aValue : jsValue) : TJSUInt8Array; varargs; external name 'of'; reintroduce; overload;
-    function subarray(aBegin, aEnd: Integer): TJSUInt8Array;  overload;
+    function subarray(aBegin, aEnd: Integer): TJSUInt8Array; overload;
     function subarray(aBegin: Integer): TJSUInt8Array; overload;
     procedure _set(anArray : Array of Byte); external name 'set'; reintroduce; overload;
     procedure _set(anArray : Array of Byte; anOffset : NativeInt); external name 'set'; overload;
     Property values[Index : NativeInt] : Byte Read getTypedValue Write setTypedValue; default;
   end;
 
-  TJSUint8ClampedArray  = class external name 'Uint8ClampedArray' (TJSTypedArray)
+  TJSUint8ClampedArray = class external name 'Uint8ClampedArray' (TJSTypedArray)
   private
     function getTypedValue(Index : NativeInt): Byte; external name '[]';
     procedure setTypedValue(Index : NativeInt; AValue: Byte);external name '[]';
   public
-    constructor new (length : NativeInt);
-    constructor new (atypedArray : TJSTypedArray);
-    constructor new (aObject : TJSObject);
-    constructor new (buffer : TJSArrayBuffer);
-    constructor new (buffer : TJSArrayBuffer; aByteOffset: NativeInt);
-    constructor new (buffer : TJSArrayBuffer; aByteOffset, aLength: NativeInt);
-    class function from(aValue : jsValue) : TJSUInt8ClampedArray; reintroduce;
-    class function from(aValue : jsValue; Map : TJSTypedArrayMapCallBack) : TJSUInt8ClampedArray; reintroduce;overload;
-    class function from(aValue : jsValue; aMap : TJSTypedArrayMapEvent) : TJSUInt8ClampedArray; reintroduce;overload;
-    class function _of(aValue : jsValue) : TJSUInt8ClampedArray; varargs; external name 'of'; reintroduce;overload;
-    procedure _set(anArray : Array of Byte); external name 'set'; reintroduce;overload;
-    procedure _set(anArray : Array of Byte; anOffset : NativeInt); external name 'set';overload;
-    function subarray(aBegin, aEnd: Integer): TJSUInt8ClampedArray;  overload;
+    constructor new (length : NativeInt); overload;
+    constructor new (atypedArray : TJSTypedArray); overload;
+    constructor new (aObject : TJSObject); overload;
+    constructor new (buffer : TJSArrayBuffer); overload;
+    constructor new (buffer : TJSArrayBuffer; aByteOffset: NativeInt); overload;
+    constructor new (buffer : TJSArrayBuffer; aByteOffset, aLength: NativeInt); overload;
+    class function from(aValue : jsValue) : TJSUInt8ClampedArray; reintroduce; overload;
+    class function from(aValue : jsValue; Map : TJSTypedArrayMapCallBack) : TJSUInt8ClampedArray; reintroduce; overload;
+    class function from(aValue : jsValue; aMap : TJSTypedArrayMapEvent) : TJSUInt8ClampedArray; reintroduce; overload;
+    class function _of(aValue : jsValue) : TJSUInt8ClampedArray; varargs; external name 'of'; reintroduce; overload;
+    procedure _set(anArray : Array of Byte); external name 'set'; reintroduce; overload;
+    procedure _set(anArray : Array of Byte; anOffset : NativeInt); external name 'set'; overload;
+    function subarray(aBegin, aEnd: Integer): TJSUInt8ClampedArray; overload;
     function subarray(aBegin: Integer): TJSUInt8ClampedArray; overload;
     Property values[Index : NativeInt] : Byte Read getTypedValue Write setTypedValue; default;
   end;
@@ -615,19 +615,19 @@ type
     function getTypedValue(Index : NativeInt): smallint; external name '[]';
     procedure setTypedValue(Index : NativeInt; AValue: Smallint);external name '[]';
   public
-    constructor new (length : NativeInt);
-    constructor new (atypedArray : TJSTypedArray);
-    constructor new (aObject : TJSObject);
-    constructor new (buffer : TJSArrayBuffer);
-    constructor new (buffer : TJSArrayBuffer; aByteOffset: NativeInt);
-    constructor new (buffer : TJSArrayBuffer; aByteOffset, aLength: NativeInt);
-    class function from(aValue : jsValue) : TJSInt16Array; reintroduce;
-    class function from(aValue : jsValue; Map : TJSTypedArrayMapCallBack) : TJSInt16Array; reintroduce;overload;
-    class function from(aValue : jsValue; aMap : TJSTypedArrayMapEvent) : TJSInt16Array; reintroduce;overload;
-    class function _of(aValue : jsValue) : TJSInt16Array; varargs; external name 'of'; reintroduce;overload;
-    procedure _set(anArray : Array of SmallInt); external name 'set'; reintroduce;overload;
-    procedure _set(anArray : Array of SmallInt; anOffset : NativeInt); external name 'set';overload;
-    function subarray(aBegin, aEnd: Integer): TJSInt16Array;  overload;
+    constructor new (length : NativeInt); overload;
+    constructor new (atypedArray : TJSTypedArray); overload;
+    constructor new (aObject : TJSObject); overload;
+    constructor new (buffer : TJSArrayBuffer); overload;
+    constructor new (buffer : TJSArrayBuffer; aByteOffset: NativeInt); overload;
+    constructor new (buffer : TJSArrayBuffer; aByteOffset, aLength: NativeInt); overload;
+    class function from(aValue : jsValue) : TJSInt16Array; reintroduce; overload;
+    class function from(aValue : jsValue; Map : TJSTypedArrayMapCallBack) : TJSInt16Array; reintroduce; overload;
+    class function from(aValue : jsValue; aMap : TJSTypedArrayMapEvent) : TJSInt16Array; reintroduce; overload;
+    class function _of(aValue : jsValue) : TJSInt16Array; varargs; external name 'of'; reintroduce; overload;
+    procedure _set(anArray : Array of SmallInt); external name 'set'; reintroduce; overload;
+    procedure _set(anArray : Array of SmallInt; anOffset : NativeInt); external name 'set'; overload;
+    function subarray(aBegin, aEnd: Integer): TJSInt16Array; overload;
     function subarray(aBegin: Integer): TJSInt16Array; overload;
     Property values[Index : NativeInt] : SmallInt Read getTypedValue Write setTypedValue; default;
   end;
@@ -637,19 +637,19 @@ type
     function getTypedValue(Index : NativeInt): Word; external name '[]';
     procedure setTypedValue(Index : NativeInt; AValue: Word);external name '[]';
   public
-    constructor new (length : NativeInt);
-    constructor new (atypedArray : TJSTypedArray);
-    constructor new (aObject : TJSObject);
-    constructor new (buffer : TJSArrayBuffer);
-    constructor new (buffer : TJSArrayBuffer; aByteOffset: NativeInt);
-    constructor new (buffer : TJSArrayBuffer; aByteOffset, aLength: NativeInt);
-    class function from(aValue : jsValue) : TJSUInt16Array; reintroduce;
-    class function from(aValue : jsValue; Map : TJSTypedArrayMapCallBack) : TJSUInt16Array; reintroduce;
-    class function from(aValue : jsValue; aMap : TJSTypedArrayMapEvent) : TJSUInt16Array; reintroduce;
+    constructor new (length : NativeInt); overload;
+    constructor new (atypedArray : TJSTypedArray); overload;
+    constructor new (aObject : TJSObject); overload;
+    constructor new (buffer : TJSArrayBuffer); overload;
+    constructor new (buffer : TJSArrayBuffer; aByteOffset: NativeInt); overload;
+    constructor new (buffer : TJSArrayBuffer; aByteOffset, aLength: NativeInt); overload;
+    class function from(aValue : jsValue) : TJSUInt16Array; reintroduce; overload;
+    class function from(aValue : jsValue; Map : TJSTypedArrayMapCallBack) : TJSUInt16Array; reintroduce; overload;
+    class function from(aValue : jsValue; aMap : TJSTypedArrayMapEvent) : TJSUInt16Array; reintroduce; overload;
     class function _of(aValue : jsValue) : TJSUInt16Array; varargs; external name 'of'; reintroduce;
-    procedure _set(anArray : Array of Word); external name 'set'; reintroduce;
-    procedure _set(anArray : Array of Word; anOffset : NativeInt); external name 'set';
-    function subarray(aBegin, aEnd: Integer): TJSUInt16Array;  overload;
+    procedure _set(anArray : Array of Word); external name 'set'; reintroduce; overload;
+    procedure _set(anArray : Array of Word; anOffset : NativeInt); external name 'set'; overload;
+    function subarray(aBegin, aEnd: Integer): TJSUInt16Array; overload;
     function subarray(aBegin: Integer): TJSUInt16Array; overload;
     Property values[Index : NativeInt] : Word Read getTypedValue Write setTypedValue; default;
   end;
@@ -659,19 +659,19 @@ type
     function getTypedValue(Index : NativeInt): longint; external name '[]';
     procedure setTypedValue(Index : NativeInt; AValue: longint);external name '[]';
   public
-    constructor new (length : NativeInt);
-    constructor new (atypedArray : TJSTypedArray);
-    constructor new (aObject : TJSObject);
-    constructor new (buffer : TJSArrayBuffer);
-    constructor new (buffer : TJSArrayBuffer; aByteOffset: NativeInt);
-    constructor new (buffer : TJSArrayBuffer; aByteOffset, aLength: NativeInt);
-    class function from(aValue : jsValue) : TJSInt32Array; reintroduce;
-    class function from(aValue : jsValue; Map : TJSTypedArrayMapCallBack) : TJSInt32Array; reintroduce;
-    class function from(aValue : jsValue; aMap : TJSTypedArrayMapEvent) : TJSInt32Array; reintroduce;
+    constructor new (length : NativeInt); overload;
+    constructor new (atypedArray : TJSTypedArray); overload;
+    constructor new (aObject : TJSObject); overload;
+    constructor new (buffer : TJSArrayBuffer); overload;
+    constructor new (buffer : TJSArrayBuffer; aByteOffset: NativeInt); overload;
+    constructor new (buffer : TJSArrayBuffer; aByteOffset, aLength: NativeInt); overload;
+    class function from(aValue : jsValue) : TJSInt32Array; reintroduce; overload;
+    class function from(aValue : jsValue; Map : TJSTypedArrayMapCallBack) : TJSInt32Array; reintroduce; overload;
+    class function from(aValue : jsValue; aMap : TJSTypedArrayMapEvent) : TJSInt32Array; reintroduce; overload;
     class function _of(aValue : jsValue) : TJSInt32Array; varargs;external name 'of'; reintroduce;
-    procedure _set(anArray : Array of LongInt); external name 'set'; reintroduce;
-    procedure _set(anArray : Array of LongInt; anOffset : NativeInt); external name 'set';
-    function subarray(aBegin, aEnd: Integer): TJSInt32Array;  overload;
+    procedure _set(anArray : Array of LongInt); external name 'set'; reintroduce; overload;
+    procedure _set(anArray : Array of LongInt; anOffset : NativeInt); external name 'set'; overload;
+    function subarray(aBegin, aEnd: Integer): TJSInt32Array; overload;
     function subarray(aBegin: Integer): TJSInt32Array; overload;
     Property values[Index : NativeInt] : longint Read getTypedValue Write setTypedValue; default;
   end;
@@ -681,19 +681,19 @@ type
     function getTypedValue(Index : NativeInt): LongWord; external name '[]';
     procedure setTypedValue(Index : NativeInt; AValue: LongWord);external name '[]';
   public
-    constructor new (length : NativeInt);
-    constructor new (atypedArray : TJSTypedArray);
-    constructor new (aObject : TJSObject);
-    constructor new (buffer : TJSArrayBuffer);
-    constructor new (buffer : TJSArrayBuffer; aByteOffset: NativeInt);
-    constructor new (buffer : TJSArrayBuffer; aByteOffset, aLength: NativeInt);
-    class function from(aValue : jsValue) : TJSUInt32Array; reintroduce;
-    class function from(aValue : jsValue; Map : TJSTypedArrayMapCallBack) : TJSUInt32Array; reintroduce;
-    class function from(aValue : jsValue; aMap : TJSTypedArrayMapEvent) : TJSUInt32Array; reintroduce;
+    constructor new (length : NativeInt); overload;
+    constructor new (atypedArray : TJSTypedArray); overload;
+    constructor new (aObject : TJSObject); overload;
+    constructor new (buffer : TJSArrayBuffer); overload;
+    constructor new (buffer : TJSArrayBuffer; aByteOffset: NativeInt); overload;
+    constructor new (buffer : TJSArrayBuffer; aByteOffset, aLength: NativeInt); overload;
+    class function from(aValue : jsValue) : TJSUInt32Array; reintroduce; overload;
+    class function from(aValue : jsValue; Map : TJSTypedArrayMapCallBack) : TJSUInt32Array; reintroduce; overload;
+    class function from(aValue : jsValue; aMap : TJSTypedArrayMapEvent) : TJSUInt32Array; reintroduce; overload;
     class function _of(aValue : jsValue) : TJSUInt32Array; varargs; external name 'of'; reintroduce;
-    procedure _set(anArray : Array of Cardinal); external name 'set'; reintroduce;
-    procedure _set(anArray : Array of Cardinal; anOffset : NativeInt); external name 'set';
-    function subarray(aBegin, aEnd: Integer): TJSUInt32Array;  overload;
+    procedure _set(anArray : Array of Cardinal); external name 'set'; reintroduce; overload;
+    procedure _set(anArray : Array of Cardinal; anOffset : NativeInt); external name 'set'; overload;
+    function subarray(aBegin, aEnd: Integer): TJSUInt32Array; overload;
     function subarray(aBegin: Integer): TJSUInt32Array; overload;
     Property values[Index : NativeInt] : LongWord Read getTypedValue Write setTypedValue; default;
   end;
@@ -703,19 +703,19 @@ type
     function getTypedValue(Index : NativeInt): Float32; external name '[]';
     procedure setTypedValue(Index : NativeInt; AValue: Float32);external name '[]';
   public
-    constructor new (length : NativeInt);
-    constructor new (atypedArray : TJSTypedArray);
-    constructor new (aObject : TJSObject);
-    constructor new (buffer : TJSArrayBuffer);
-    constructor new (buffer : TJSArrayBuffer; aByteOffset: NativeInt);
-    constructor new (buffer : TJSArrayBuffer; aByteOffset, aLength: NativeInt);
-    class function from(aValue : jsValue) : TJSFloat32Array; reintroduce;
-    class function from(aValue : jsValue; Map : TJSTypedArrayMapCallBack) : TJSFloat32Array; reintroduce;
-    class function from(aValue : jsValue; aMap : TJSTypedArrayMapEvent) : TJSFloat32Array; reintroduce;
+    constructor new (length : NativeInt); overload;
+    constructor new (atypedArray : TJSTypedArray); overload;
+    constructor new (aObject : TJSObject); overload;
+    constructor new (buffer : TJSArrayBuffer); overload;
+    constructor new (buffer : TJSArrayBuffer; aByteOffset: NativeInt); overload;
+    constructor new (buffer : TJSArrayBuffer; aByteOffset, aLength: NativeInt); overload;
+    class function from(aValue : jsValue) : TJSFloat32Array; reintroduce; overload;
+    class function from(aValue : jsValue; Map : TJSTypedArrayMapCallBack) : TJSFloat32Array; reintroduce; overload;
+    class function from(aValue : jsValue; aMap : TJSTypedArrayMapEvent) : TJSFloat32Array; reintroduce; overload;
     class function _of(aValue : jsValue) : TJSFloat32Array; varargs; reintroduce;
-    procedure _set(anArray : Array of Double); external name 'set'; reintroduce;
-    procedure _set(anArray : Array of Double; anOffset : NativeInt); external name 'set'; reintroduce;
-    function subarray(aBegin, aEnd: Integer): TJSFloat32Array;  overload;
+    procedure _set(anArray : Array of Double); external name 'set'; reintroduce; overload;
+    procedure _set(anArray : Array of Double; anOffset : NativeInt); external name 'set'; reintroduce; overload;
+    function subarray(aBegin, aEnd: Integer): TJSFloat32Array; overload;
     function subarray(aBegin: Integer): TJSFloat32Array; overload;
     Property values[Index : NativeInt] : Float32 Read getTypedValue Write setTypedValue; default;
   end;
@@ -725,19 +725,19 @@ type
     function getTypedValue(Index : NativeInt): Float64; external name '[]';
     procedure setTypedValue(Index : NativeInt; AValue: Float64);external name '[]';
   public
-    constructor new (length : NativeInt);
-    constructor new (atypedArray : TJSTypedArray);
-    constructor new (aObject : TJSObject);
-    constructor new (buffer : TJSArrayBuffer);
-    constructor new (buffer : TJSArrayBuffer; aByteOffset: NativeInt);
-    constructor new (buffer : TJSArrayBuffer; aByteOffset, aLength: NativeInt);
-    class function from(aValue : jsValue) : TJSFloat64Array; reintroduce;
-    class function from(aValue : jsValue; Map : TJSTypedArrayMapCallBack) : TJSFloat64Array; reintroduce;
-    class function from(aValue : jsValue; aMap : TJSTypedArrayMapEvent) : TJSFloat64Array; reintroduce;
+    constructor new (length : NativeInt); overload;
+    constructor new (atypedArray : TJSTypedArray); overload;
+    constructor new (aObject : TJSObject); overload;
+    constructor new (buffer : TJSArrayBuffer); overload;
+    constructor new (buffer : TJSArrayBuffer; aByteOffset: NativeInt); overload;
+    constructor new (buffer : TJSArrayBuffer; aByteOffset, aLength: NativeInt); overload;
+    class function from(aValue : jsValue) : TJSFloat64Array; reintroduce; overload;
+    class function from(aValue : jsValue; Map : TJSTypedArrayMapCallBack) : TJSFloat64Array; reintroduce; overload;
+    class function from(aValue : jsValue; aMap : TJSTypedArrayMapEvent) : TJSFloat64Array; reintroduce; overload;
     class function _of(aValue : jsValue) : TJSFloat64Array; varargs; reintroduce;
-    procedure _set(anArray : Array of Double); external name 'set'; reintroduce;
-    procedure _set(anArray : Array of Double; anOffset : NativeInt); external name 'set'; reintroduce;
-    function subarray(aBegin, aEnd: Integer): TJSFloat64Array;  overload;
+    procedure _set(anArray : Array of Double); external name 'set'; reintroduce; overload;
+    procedure _set(anArray : Array of Double; anOffset : NativeInt); external name 'set'; reintroduce; overload;
+    function subarray(aBegin, aEnd: Integer): TJSFloat64Array; overload;
     function subarray(aBegin: Integer): TJSFloat64Array; overload;
     Property values[Index : NativeInt] : Float64 Read getTypedValue Write setTypedValue; default;
   end;
@@ -755,7 +755,7 @@ type
     function getFloat32(aByteOffset : NativeInt; aLittleEndian: Boolean) : double; overload;
     function getFloat64(aByteOffset : NativeInt) : double; overload;
     function getFloat64(aByteOffset : NativeInt; aLittleEndian: Boolean) : double; overload;
-    function getInt8(aByteOffset : NativeInt) : ShortInt; 
+    function getInt8(aByteOffset : NativeInt) : ShortInt;
     function getInt16(aByteOffset : NativeInt) : SmallInt; overload;
     function getInt16(aByteOffset : NativeInt; aLittleEndian : Boolean) : SmallInt; overload;
     function getInt32(aByteOffset : NativeInt) : Longint; overload;
@@ -770,7 +770,7 @@ type
     procedure setFloat32(aByteOffset : NativeInt; aValue : double; aLittleEndian: Boolean); overload;
     procedure setFloat64(aByteOffset : NativeInt; aValue : double); overload;
     procedure setFloat64(aByteOffset : NativeInt; aValue : double; aLittleEndian: Boolean); overload;
-    procedure setInt8(aByteOffset : NativeInt; aValue : ShortInt); 
+    procedure setInt8(aByteOffset : NativeInt; aValue : ShortInt);
     procedure setInt16(aByteOffset : NativeInt; aValue : SmallInt); overload;
     procedure setInt16(aByteOffset : NativeInt; aValue : SmallInt; aLittleEndian : Boolean); overload;
     procedure setInt32(aByteOffset : NativeInt; aValue : Longint); overload;
@@ -790,55 +790,62 @@ type
     class function parse(aJSON : String) : JSValue;
     // Use this only when you are sure you will get an object, no checking is done.
     class function parseObject(aJSON : String) : TJSObject; external name 'parse';
-    class function stringify(aValue : JSValue) : string;
-    class function stringify(aValue,aReplacer : JSValue) : string;
-    class function stringify(aValue,aReplacer : JSValue; space:  NativeInt) : string;
-    class function stringify(aValue,aReplacer : JSValue; space:  String) : string;
+    class function stringify(aValue : JSValue) : string; overload;
+    class function stringify(aValue,aReplacer : JSValue) : string; overload;
+    class function stringify(aValue,aReplacer : JSValue; space:  NativeInt) : string; overload;
+    class function stringify(aValue,aReplacer : JSValue; space:  String) : string; overload;
   end;
 
   { TJSError }
 
-  TJSError = Class external name 'Error'   (TJSObject)
+  TJSError = Class external name 'Error' (TJSObject)
   private
     FMessage: String; external name 'message';
     {$ifdef NodeJS}
     FStack: JSValue; external name 'stack';
     {$endif}
   Public
-    Constructor new;
-    Constructor new(Const aMessage : string);
-    Constructor new(Const aMessage,aFileName : string);
-    Constructor new(Const aMessage,aFileName : string; aLineNumber : NativeInt);
+    Constructor new; overload;
+    Constructor new(Const aMessage : string); overload;
+    Constructor new(Const aMessage,aFileName : string); overload;
+    Constructor new(Const aMessage,aFileName : string; aLineNumber : NativeInt); overload;
     Property Message : String Read FMessage;
     {$ifdef NodeJS}
     Property Stack: JSValue read FStack;
     {$endif}
   end;
 
-
-  TJSPromiseResolver = reference to function (aValue : JSValue) : JSValue;
-  TJSPromiseExecutor = reference to procedure (resolve,reject : TJSPromiseResolver);
+  TJSPromiseResolver = reference to function(aValue: JSValue): JSValue;
+  TJSPromiseResolverFunc<TP, TR> = reference to function(Value: TP): TR;
+  TJSPromiseResolverProc<T> = reference to procedure(Value: T);
+  TJSPromiseExecutor = reference to procedure(Resolve, Reject: TJSPromiseResolver);
   TJSPromiseFinallyHandler = reference to procedure;
-  TJSPromise = Class;
+
+  TJSPromise = class;
   TJSPromiseArray = array of TJSPromise;
 
   TJSPromise = class external name 'Promise'
-    constructor new(Executor : TJSPromiseExecutor);
-    class function all(arg : Array of JSValue) : TJSPromise; overload;
-    class function all(arg : JSValue) : TJSPromise; overload;
-    class function all(arg : TJSPromiseArray) : TJSPromise; overload;
-    class function race(arg : Array of JSValue) : TJSPromise; overload;
-    class function race(arg : JSValue) : TJSPromise; overload;
-    class function race(arg : TJSPromiseArray) : TJSPromise; overload;
-    class function reject(reason : JSValue) : TJSPromise;
-    class function resolve(value : JSValue): TJSPromise; overload;
-    class function resolve : TJSPromise; overload;
-    function _then (onAccepted : TJSPromiseResolver) : TJSPromise; external name 'then';
-    function _then (onAccepted,OnRejected: TJSPromiseResolver) : TJSPromise; external name 'then';
-    function catch (onRejected : TJSPromiseResolver) : TJSPromise;
-    function _finally(value : TJSPromiseFinallyHandler): TJSPromise; external name 'finally';
-  end;
+  public
+    constructor new(Executor: TJSPromiseExecutor);
+    class function all(arg: array of JSValue): TJSPromise; overload;
+    class function all(arg: JSValue): TJSPromise; overload;
+    class function all(arg: TJSPromiseArray): TJSPromise; overload;
+    class function race(arg: array of JSValue): TJSPromise; overload;
+    class function race(arg: JSValue): TJSPromise; overload;
+    class function race(arg: TJSPromiseArray): TJSPromise; overload;
+    class function reject(reason: JSValue): TJSPromise;
+    class function resolve: TJSPromise; overload;
+    class function resolve(Value: JSValue): TJSPromise; overload;
+    function &then<T>(OnAccepted: TJSPromiseResolverProc<T>): TJSPromise; overload;
+    function &then<TP, TR>(OnAccepted: TJSPromiseResolverFunc<TP, TR>): TJSPromise; overload;
+    function catch(onRejected: TJSPromiseResolver): TJSPromise; overload;
+    function catch<TE>(onRejected: TJSPromiseResolverProc<TE>): TJSPromise; overload;
+    function &finally(Handler: TJSPromiseFinallyHandler): TJSPromise;
 
+    function _then(OnAccepted: TJSPromiseResolver): TJSPromise; external name 'then'; overload;
+    function _then(OnAccepted, onRejected: TJSPromiseResolver): TJSPromise; external name 'then'; overload;
+    function _finally(Value: TJSPromiseFinallyHandler): TJSPromise; external name 'finally';
+  end;
 
   TJSFunctionArguments = class external name 'arguments'
   private
@@ -912,7 +919,7 @@ function toInteger(const v: JSValue): NativeInt; // if v is not an integer, retu
 function toObject(Value: JSValue): TJSObject; // If Value is not a Javascript object, returns Nil
 function toArray(Value: JSValue): TJSArray; // If Value is not a Javascript array, returns Nil
 function toBoolean(Value: JSValue): Boolean; // If Value is not a Boolean, returns False
-function toString(Value: JSValue): String; // If Value is not a string, returns ''
+function toString(Value: JSValue): String; overload; // If Value is not a string, returns ''
 
 Type
   TJSValueType = (jvtNull,jvtBoolean,jvtInteger,jvtFloat,jvtString,jvtObject,jvtArray);
@@ -927,7 +934,7 @@ implementation
 
 function new(aElements: TJSValueDynArray): TJSObject;
 
-  function toString(I : Integer): string; external name 'String';
+  function toString(I : Integer): string; external name 'String'; overload;
 
 Var
   L,I : integer;
