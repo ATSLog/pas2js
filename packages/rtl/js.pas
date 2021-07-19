@@ -817,7 +817,8 @@ type
 
   TJSPromiseResolver = reference to function(aValue: JSValue): JSValue;
   TJSPromiseResolverFunc<TP, TR> = reference to function(Value: TP): TR;
-  TJSPromiseResolverProc<T> = reference to procedure(Value: T);
+  TJSPromiseResolverProc = reference to procedure;
+  TJSPromiseResolverProcGen<T> = reference to procedure(Value: T);
   TJSPromiseExecutor = reference to procedure(Resolve, Reject: TJSPromiseResolver);
   TJSPromiseFinallyHandler = reference to procedure;
 
@@ -836,10 +837,11 @@ type
     class function reject(reason: JSValue): TJSPromise;
     class function resolve: TJSPromise; overload;
     class function resolve(Value: JSValue): TJSPromise; overload;
-    function &then<T>(OnAccepted: TJSPromiseResolverProc<T>): TJSPromise; overload;
+    function &then(OnAccepted: TJSPromiseResolverProc): TJSPromise; overload;
+    function &then<T>(OnAccepted: TJSPromiseResolverProcGen<T>): TJSPromise; overload;
     function &then<TP, TR>(OnAccepted: TJSPromiseResolverFunc<TP, TR>): TJSPromise; overload;
     function catch(onRejected: TJSPromiseResolver): TJSPromise; overload;
-    function catch<TE>(onRejected: TJSPromiseResolverProc<TE>): TJSPromise; overload;
+    function catch<TE>(onRejected: TJSPromiseResolverProcGen<TE>): TJSPromise; overload;
     function &finally(Handler: TJSPromiseFinallyHandler): TJSPromise;
 
     function _then(OnAccepted: TJSPromiseResolver): TJSPromise; external name 'then'; overload;
